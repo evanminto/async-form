@@ -1,0 +1,17 @@
+{
+  "name": "asynchronous-form",
+  "version": "0.0.0",
+  "description": "Transforms normal HTML forms into asynchronous forms, replacing normal submission with an XMLHttpRequests and enabling convenient asynchronous submission via JavaScript.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "keywords": [
+    "forms",
+    "async",
+    "asynchronous",
+    "browser"
+  ],
+  "author": "Evan Minto (vamptvo@gmail.com)",
+  "license": "ISC"
+}
