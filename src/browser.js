@@ -1,0 +1,1 @@
+window.asyncForm = require('./index');
