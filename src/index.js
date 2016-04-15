@@ -1,3 +1,3 @@
-module.exports = function createAsynchronousForm(formElement) {
+'use strict';
 
-};
+module.exports = require('./initialize');
