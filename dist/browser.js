@@ -768,24 +768,49 @@ var matches = require('matches-selector');
 
 var submitForm = require('./submitForm');
 
+/**
+ * Prevents default, synchronous submission and submits via AJAX.
+ *
+ * @param  {Event} event
+ * @private
+ */
 function handleSubmit(event) {
   event.preventDefault();
 
   submitForm(event.target);
 }
 
+/**
+ * Takes a single form element and transforms it into an asynchronous form.
+ *
+ * @param  {HTMLFormElement} formElement
+ * @private
+ */
 function initializeForSingleElement(formElement) {
   formElement.addEventListener('submit', handleSubmit);
 }
 
+/**
+ * Takes a NodeList of form elements and transforms each one into an asynchronous form.
+ *
+ * @param  {NodeList} formElements
+ * @private
+ */
 function initializeForCollection(formElements) {
   var formElementsLen = formElements.length;
 
   for (var i = 0; i < formElementsLen; i++) {
-    formElements[i].addEventListener('submit', handleSubmit);
+    initializeForSingleElement(formElements[i]);
   }
 }
 
+/**
+ * Takes a CSS selector representing some number of form elements and
+ * transforms each one into an asynchronous form.
+ *
+ * @param  {String} selector   a CSS selector
+ * @private
+ */
 function initializeForSelector(selector) {
   document.addEventListener('submit', function (event) {
     if (matches(event.target, selector)) {
@@ -794,6 +819,13 @@ function initializeForSelector(selector) {
   });
 }
 
+/**
+ * Takes a target (either a form element, a list of form elements, or a CSS selector)
+ * and transforms each form that it represents into an asynchronous form.
+ *
+ * @param  {HTMLFormElement|NodeList|String} target
+ * @public
+ */
 module.exports = function initialize(target) {
   if (target instanceof HTMLFormElement) {
     initializeForSingleElement(target);
@@ -815,16 +847,34 @@ var CustomEvent = require('custom-event');
 var getFormData = require('get-form-data');
 var queryString = require('query-string');
 
-function dispatchFormEvent(form, type, detail) {
-  detail = detail || {};
-  var event = new CustomEvent(type, {
-    detail: detail,
-    bubbles: true
-  });
+/**
+ * Dispatches a custom event on the specified form element.
+ *
+ * @param  {HTMLFormElement} form
+ * @param  {String} type     event type name
+ * @param  {Object} init     event init object
+ * @return {boolean}         true if the event was canceled
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent
+ * @private
+ */
+function dispatchFormEvent(form, type, init) {
+  init = init || {};
 
-  form.dispatchEvent(event);
+  var event = new CustomEvent(type, Object.assign({
+    bubbles: true
+  }, init));
+
+  return form.dispatchEvent(event);
 }
 
+/**
+ * Generates a Fetch API Request object based on the provided form element.
+ *
+ * @param  {HTMLFormElement} formElement
+ * @return {Request}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Request
+ * @private
+ */
 function createRequest(formElement) {
   var url = formElement.action;
   var body = void 0;
@@ -841,30 +891,67 @@ function createRequest(formElement) {
   });
 }
 
+/**
+ * Dispatch events after a successful AJAX form submission.
+ *
+ * @param  {Response} response
+ * @this   {HTMLFormElement}   the form being submitted
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Response
+ * @private
+ */
+function dispatchSuccessfulEvents(response) {
+  dispatchFormEvent(this, 'submitted.asyncForm', {
+    detail: {
+      response: response
+    }
+  });
+
+  if (response.ok) {
+    dispatchFormEvent(this, 'success.asyncForm', {
+      detail: {
+        response: response
+      }
+    });
+  } else {
+    dispatchFormEvent(this, 'fail.asyncForm', {
+      detail: {
+        response: response
+      }
+    });
+  }
+}
+
+/**
+ * Dispatch events after a failed AJAX form submission.
+ *
+ * @this {HTMLFormElement} the form being submitted
+ * @private
+ */
+function dispatchUnsuccessfulEvents() {
+  dispatchFormEvent(this, 'error.asyncForm');
+}
+
+/**
+ * Submits a form via AJAX.
+ *
+ * @param  {HTMLFormElement} formElement
+ * @public
+ */
 module.exports = function submitAsyncForm(formElement) {
   var request = createRequest(formElement);
 
-  dispatchFormEvent(formElement, 'submitting.asyncForm', {
-    request: request
-  });
-
-  fetch(request).then(function (response) {
-    dispatchFormEvent(formElement, 'submitted.asyncForm', {
-      response: response
-    });
-
-    if (response.ok) {
-      dispatchFormEvent(formElement, 'success.asyncForm', {
-        response: response
-      });
-    } else {
-      dispatchFormEvent(formElement, 'fail.asyncForm', {
-        response: response
-      });
+  var canceled = !dispatchFormEvent(formElement, 'submitting.asyncForm', {
+    cancelable: true,
+    detail: {
+      request: request
     }
-  }).catch(function () {
-    return dispatchFormEvent(formElement, 'error.asyncForm');
   });
+
+  if (canceled) {
+    return;
+  }
+
+  fetch(request).then(dispatchSuccessfulEvents.bind(formElement)).catch(dispatchUnsuccessfulEvents.bind(formElement));
 };
 
 },{"custom-event":1,"get-form-data":2,"query-string":4,"whatwg-fetch":6}]},{},[7]);

@@ -38,6 +38,10 @@
         document.querySelector('#post_form').addEventListener('submitted.asyncForm', function(event) {
           console.log('Submitted, got response:', event.detail.response);
         });
+
+        document.querySelector('.js-async-form').addEventListener('submitting.asyncForm', function(event) {
+          event.preventDefault()
+        });
       });
     </script>
   </body>

@@ -1,6 +1,6 @@
 {
   "name": "@evanminto/async-form",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Transforms normal HTML forms into asynchronous forms, replacing normal submission with a AJAX requests.",
   "main": "src/index.js",
   "scripts": {
@@ -21,8 +21,10 @@
     "grunt-browserify": "^5.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-jest": "^0.2.0",
+    "grunt-jsdoc": "^1.1.0",
     "jest": "^0.1.40",
     "jest-cli": "^0.10.0",
+    "jsdoc": "^3.4.0",
     "uglifyify": "^3.0.1",
     "xmlhttprequest": "^1.8.0"
   },

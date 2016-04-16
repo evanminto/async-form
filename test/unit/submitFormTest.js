@@ -116,6 +116,21 @@ describe('submitForm', () => {
         });
     });
 
+    pit("does not submit if the \"submitting\" event is canceled", () => {
+      return new Promise((resolve, reject) => {
+        form.addEventListener('submitting.asyncForm', event => {
+          event.preventDefault();
+        });
+
+        window.fetch = jest.fn().mockImpl(() => {
+          reject();
+        });
+
+        submitForm(form);
+        resolve();
+      });
+    });
+
     pit("dispatches a \"submitted\" custom event if the request succeeded", () => {
       return new Promise(resolve => {
         form.addEventListener('submitted.asyncForm', event => {
