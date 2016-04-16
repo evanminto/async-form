@@ -13,7 +13,7 @@ jest.mock('matches-selector', () => {
 });
 
 const initialize = require('../../src/initialize');
-const mockAsyncForm = require('../../src/asyncForm');
+const mockSubmitForm = require('../../src/submitForm');
 
 describe('initialize', () => {
   let forms;
@@ -54,7 +54,7 @@ describe('initialize', () => {
         initialize(forms[0]);
         forms[0].querySelector('button').click();
 
-        expect(mockAsyncForm).toBeCalledWith(forms[0]);
+        expect(mockSubmitForm).toBeCalledWith(forms[0]);
       });
     });
   });
@@ -64,16 +64,16 @@ describe('initialize', () => {
       it("calls asyncForm with the forms", () => {
         initialize(document.querySelectorAll('#form0, #form2'));
 
-        mockAsyncForm.mockClear();
+        mockSubmitForm.mockClear();
 
         forms[0].querySelector('button').click();
-        expect(mockAsyncForm).toBeCalledWith(forms[0]);
+        expect(mockSubmitForm).toBeCalledWith(forms[0]);
 
         forms[1].querySelector('button').click();
-        expect(mockAsyncForm).not.toBeCalledWith(forms[1]);
+        expect(mockSubmitForm).not.toBeCalledWith(forms[1]);
 
         forms[2].querySelector('button').click();
-        expect(mockAsyncForm).toBeCalledWith(forms[2]);
+        expect(mockSubmitForm).toBeCalledWith(forms[2]);
       });
     });
   });
@@ -83,16 +83,16 @@ describe('initialize', () => {
       it("calls asyncForm with the forms", () => {
         initialize('.js-async-form');
 
-        mockAsyncForm.mockClear();
+        mockSubmitForm.mockClear();
 
         forms[0].querySelector('button').click();
-        expect(mockAsyncForm).toBeCalledWith(forms[0]);
+        expect(mockSubmitForm).toBeCalledWith(forms[0]);
 
         forms[1].querySelector('button').click();
-        expect(mockAsyncForm).toBeCalledWith(forms[1]);
+        expect(mockSubmitForm).toBeCalledWith(forms[1]);
 
         forms[2].querySelector('button').click();
-        expect(mockAsyncForm).not.toBeCalledWith(forms[2]);
+        expect(mockSubmitForm).not.toBeCalledWith(forms[2]);
       });
     });
   });

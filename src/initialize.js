@@ -2,12 +2,12 @@
 
 const matches = require('matches-selector');
 
-const asyncForm = require('./asyncForm');
+const submitForm = require('./submitForm');
 
 function handleSubmit(event) {
   event.preventDefault();
 
-  asyncForm(event.target);
+  submitForm(event.target);
 }
 
 function initializeForSingleElement(formElement) {

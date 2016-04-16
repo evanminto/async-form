@@ -1,8 +1,8 @@
 'use strict';
 
-jest.unmock('../../src/index');
+jest.unmock('../../dist/index');
 
-const createAsynchronousForm = require('../../src/index');
+const createAsynchronousForm = require('../../dist/index');
 
 describe('asynchronous-form', () => {
   it('is a function', () => {

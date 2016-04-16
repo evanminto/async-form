@@ -42,6 +42,8 @@ module.exports = function(grunt) {
             }],
 
             ['uglifyify', {
+              compress: true,
+              mangle: true,
               unsafe: true,
             }],
           ],

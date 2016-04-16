@@ -3,12 +3,10 @@
 let form;
 
 jest.unmock('whatwg-fetch');
-jest.unmock('../../src/asyncForm');
+jest.unmock('../../src/submitForm');
 
-jest.mock('../../src/customEvent', () => {
-  return (type, init) => {
-    return new CustomEvent(type, init);
-  };
+jest.mock('custom-event', () => {
+  return CustomEvent;
 });
 
 jest.mock('get-form-data', () => {
@@ -31,12 +29,12 @@ jest.mock('query-string', () => {
   };
 });
 
-const asyncForm = require('../../src/asyncForm');
+const submitForm = require('../../src/submitForm');
 
-describe('asyncForm', () => {
+describe('submitForm', () => {
   it("is a function", () => {
-    expect(asyncForm).toBeDefined();
-    expect(typeof asyncForm).toEqual('function');
+    expect(submitForm).toBeDefined();
+    expect(typeof submitForm).toEqual('function');
   });
 
   describe("when passing a form element", () => {
@@ -96,7 +94,7 @@ describe('asyncForm', () => {
 
           form.method = 'get';
 
-          asyncForm(form);
+          submitForm(form);
         });
       });
     });
@@ -107,7 +105,7 @@ describe('asyncForm', () => {
           resolve(event);
         });
 
-        asyncForm(form);
+        submitForm(form);
       })
         .then(event => {
           return new Promise(resolve => {
@@ -124,7 +122,7 @@ describe('asyncForm', () => {
           resolve(event);
         });
 
-        asyncForm(form);
+        submitForm(form);
       })
         .then(event => {
           return new Promise(resolve => {
@@ -141,7 +139,7 @@ describe('asyncForm', () => {
           resolve(event);
         });
 
-        asyncForm(form);
+        submitForm(form);
       })
         .then(event => {
           return new Promise(resolve => {
@@ -159,7 +157,7 @@ describe('asyncForm', () => {
         });
 
         form.action = '/fail';
-        asyncForm(form);
+        submitForm(form);
       })
         .then(event => {
           return new Promise(resolve => {
@@ -180,19 +178,19 @@ describe('asyncForm', () => {
 
         form.addEventListener('error.asyncForm', resolve);
 
-        asyncForm(form);
+        submitForm(form);
       });
     });
   });
 
   describe("when passing a non-form", () => {
     it("throws an error", () => {
-      expect(asyncForm.bind(undefined, undefined)).toThrow();
-      expect(asyncForm.bind(undefined, null)).toThrow();
-      expect(asyncForm.bind(undefined, 13)).toThrow();
-      expect(asyncForm.bind(undefined, 'uh oh')).toThrow();
-      expect(asyncForm.bind(undefined, {})).toThrow();
-      expect(asyncForm.bind(undefined, document.createElement('div'))).toThrow();
+      expect(submitForm.bind(undefined, undefined)).toThrow();
+      expect(submitForm.bind(undefined, null)).toThrow();
+      expect(submitForm.bind(undefined, 13)).toThrow();
+      expect(submitForm.bind(undefined, 'uh oh')).toThrow();
+      expect(submitForm.bind(undefined, {})).toThrow();
+      expect(submitForm.bind(undefined, document.createElement('div'))).toThrow();
     });
   })
 });

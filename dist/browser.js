@@ -759,16 +759,65 @@ module.exports = function (str) {
 },{}],7:[function(require,module,exports){
 'use strict';
 
+window.asyncForm = require('./initialize');
+
+},{"./initialize":8}],8:[function(require,module,exports){
+'use strict';
+
+var matches = require('matches-selector');
+
+var submitForm = require('./submitForm');
+
+function handleSubmit(event) {
+  event.preventDefault();
+
+  submitForm(event.target);
+}
+
+function initializeForSingleElement(formElement) {
+  formElement.addEventListener('submit', handleSubmit);
+}
+
+function initializeForCollection(formElements) {
+  var formElementsLen = formElements.length;
+
+  for (var i = 0; i < formElementsLen; i++) {
+    formElements[i].addEventListener('submit', handleSubmit);
+  }
+}
+
+function initializeForSelector(selector) {
+  document.addEventListener('submit', function (event) {
+    if (matches(event.target, selector)) {
+      handleSubmit(event);
+    }
+  });
+}
+
+module.exports = function initialize(target) {
+  if (target instanceof HTMLFormElement) {
+    initializeForSingleElement(target);
+  } else if (target instanceof NodeList) {
+    initializeForCollection(target);
+  } else if (typeof target === 'string') {
+    initializeForSelector(target);
+  } else {
+    throw 'First argument must be an HTMLFormElement, NodeList, or string.';
+  }
+};
+
+},{"./submitForm":9,"matches-selector":3}],9:[function(require,module,exports){
+'use strict';
+
 require('whatwg-fetch');
 
+var CustomEvent = require('custom-event');
 var getFormData = require('get-form-data');
 var queryString = require('query-string');
 
-var createCustomEvent = require('./customEvent');
-
 function dispatchFormEvent(form, type, detail) {
   detail = detail || {};
-  var event = createCustomEvent(type, {
+  var event = new CustomEvent(type, {
     detail: detail,
     bubbles: true
   });
@@ -818,88 +867,4 @@ module.exports = function submitAsyncForm(formElement) {
   });
 };
 
-},{"./customEvent":9,"get-form-data":2,"query-string":4,"whatwg-fetch":6}],8:[function(require,module,exports){
-'use strict';
-
-window.asyncForm = require('./index');
-
-},{"./index":10}],9:[function(require,module,exports){
-'use strict';
-
-var CustomEventPolyfill = require('custom-event');
-
-function isCustomEventAvailable() {
-  if (!CustomEvent) {
-    return false;
-  }
-
-  try {
-    new CustomEvent('garbage');
-  } catch (e) {
-    return false;
-  }
-
-  return true;
-}
-
-module.exports = function createCustomEvent() {
-  var CustomEvent = window.CustomEvent;
-
-  if (!isCustomEventAvailable()) {
-    CustomEvent = CustomEventPolyfill;
-  }
-
-  return new CustomEvent(arguments[0], arguments[1]);
-};
-
-},{"custom-event":1}],10:[function(require,module,exports){
-'use strict';
-
-module.exports = require('./initialize');
-
-},{"./initialize":11}],11:[function(require,module,exports){
-'use strict';
-
-var matches = require('matches-selector');
-
-var asyncForm = require('./asyncForm');
-
-function handleSubmit(event) {
-  event.preventDefault();
-
-  asyncForm(event.target);
-}
-
-function initializeForSingleElement(formElement) {
-  formElement.addEventListener('submit', handleSubmit);
-}
-
-function initializeForCollection(formElements) {
-  var formElementsLen = formElements.length;
-
-  for (var i = 0; i < formElementsLen; i++) {
-    formElements[i].addEventListener('submit', handleSubmit);
-  }
-}
-
-function initializeForSelector(selector) {
-  document.addEventListener('submit', function (event) {
-    if (matches(event.target, selector)) {
-      handleSubmit(event);
-    }
-  });
-}
-
-module.exports = function initialize(target) {
-  if (target instanceof HTMLFormElement) {
-    initializeForSingleElement(target);
-  } else if (target instanceof NodeList) {
-    initializeForCollection(target);
-  } else if (typeof target === 'string') {
-    initializeForSelector(target);
-  } else {
-    throw 'First argument must be an HTMLFormElement, NodeList, or string.';
-  }
-};
-
-},{"./asyncForm":7,"matches-selector":3}]},{},[8]);
+},{"custom-event":1,"get-form-data":2,"query-string":4,"whatwg-fetch":6}]},{},[7]);

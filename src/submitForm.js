@@ -2,14 +2,13 @@
 
 require('whatwg-fetch');
 
+const CustomEvent = require('custom-event');
 const getFormData = require('get-form-data');
 const queryString = require('query-string');
 
-const createCustomEvent = require('./customEvent');
-
 function dispatchFormEvent(form, type, detail) {
   detail = detail || {};
-  const event = createCustomEvent(type, {
+  const event = new CustomEvent(type, {
     detail,
     bubbles: true,
   });

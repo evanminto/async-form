@@ -1,12 +1,11 @@
 'use strict';
 
-jest.unmock('../../src/index');
+jest.unmock('../../dist/index');
 
-const index = require('../../src/index');
+const createAsynchronousForm = require('../../dist/index');
 
 describe('index', () => {
-  it("returns a function", () => {
-    expect(index).toBeDefined();
-    expect(typeof index).toEqual('function');
+  it('is a function', () => {
+    expect(typeof createAsynchronousForm).toEqual('function');
   });
 });
