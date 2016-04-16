@@ -1,3 +1,3 @@
 'use strict';
 
-window.asyncForm = require('./initialize');
+window.asyncForm = require('./index');

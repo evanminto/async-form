@@ -64,38 +64,12 @@ describe('window.asyncForm', () => {
       let form2;
 
       beforeEach(() => {
-        window.fetch = jest.fn().mockImpl((request) => {
-          return new Promise((resolve, reject) => {
-            if (request.url.substring(0, 8) === '/success') {
-              resolve(new Response('', {
-                ok: true,
-                status: 200,
-                statusText: 'OK',
-              }));
-            } else if (request.url.substring(0, 5) === '/fail') {
-              resolve(new Response('', {
-                ok: false,
-                status: 400,
-                statusText: 'Not OK',
-              }));
-            } else {
-              reject();
-            }
-          });
-        });
-
         form1 = forms[indexes[0]];
 
         if (indexes.length > 1) {
           form2 = forms[indexes[1]];
         }
       });
-
-      // it("submits via fetch", () => {
-      //   form.querySelector('button').click();
-
-      //   expect(window.fetch).toBeCalledWith(form.action);
-      // });
 
       it("dispatches a \"submitting\" event", () => {
         const submittingCallback = jest.fn();
@@ -105,14 +79,14 @@ describe('window.asyncForm', () => {
 
         expect(submittingCallback).toBeCalled();
 
-        // if (form2) {
-        //   const submittingCallback2 = jest.fn();
+        if (form2) {
+          const submittingCallback2 = jest.fn();
 
-        //   form2.addEventListener('submitting.asyncForm', submittingCallback2);
-        //   form2.querySelector('button').click();
+          form2.addEventListener('submitting.asyncForm', submittingCallback2);
+          form2.querySelector('button').click();
 
-        //   expect(submittingCallback2).toBeCalled();
-        // }
+          expect(submittingCallback2).toBeCalled();
+        }
       });
 
       pit("dispatches a \"submitted\" event", () => {
@@ -120,44 +94,96 @@ describe('window.asyncForm', () => {
           form1.addEventListener('submitted.asyncForm', resolve);
           form1.querySelector('button').click();
         }))
-          // .then(() => {
-          //   if (form2) {
-          //     return new Promise(resolve => {
-          //       form2.addEventListener('submitted.asyncForm', resolve);
-          //       form2.querySelector('button').click();
-          //     });
-          //   }
-          // });
+          .then(() => {
+            if (form2) {
+              return new Promise(resolve => {
+                form2.addEventListener('submitted.asyncForm', resolve);
+                form2.querySelector('button').click();
+              });
+            }
+          });
       });
 
       pit("dispatches a \"success\" event if the request receives a successful response", () => {
         return new Promise(resolve => {
           form1.addEventListener('success.asyncForm', resolve);
           form1.querySelector('button').click();
-        });
+        })
+          .then(() => {
+            if (form2) {
+              return new Promise(resolve => {
+                form2.addEventListener('success.asyncForm', resolve);
+                form2.querySelector('button').click();
+              });
+            }
+          });
       });
 
       pit("dispatches a \"fail\" event if the request receives an unsuccessful response", () => {
         form1.action = '/fail';
 
+        if (form2) {
+          form2.action = '/fail';
+        }
+
         return new Promise((resolve, reject) => {
           form1.addEventListener('fail.asyncForm', resolve);
           form1.querySelector('button').click();
-        });
+        })
+          .then(() => {
+            if (form2) {
+              return new Promise(resolve => {
+                form2.addEventListener('fail.asyncForm', resolve);
+                form2.querySelector('button').click();
+              });
+            }
+          });
       });
 
       pit("dispatches an \"error\" event if the request does not complete", () => {
         form1.action = '/notvalid';
 
+        if (form2) {
+          form2.action = '/notvalid';
+        }
+
         return new Promise((resolve, reject) => {
           form1.addEventListener('error.asyncForm', resolve);
           form1.querySelector('button').click();
-        });
+        })
+          .then(() => {
+            if (form2) {
+              return new Promise(resolve => {
+                form2.addEventListener('error.asyncForm', resolve);
+                form2.querySelector('button').click();
+              });
+            }
+          });
       });
     });
   }
 
   beforeEach(() => {
+    window.fetch = jest.fn().mockImpl((request) => {
+      return new Promise((resolve, reject) => {
+        if (request.url.substring(0, 8) === '/success') {
+          resolve(new Response('', {
+            ok: true,
+            status: 200,
+            statusText: 'OK',
+          }));
+        } else if (request.url.substring(0, 5) === '/fail') {
+          resolve(new Response('', {
+            ok: false,
+            status: 400,
+            statusText: 'Not OK',
+          }));
+        } else {
+          reject();
+        }
+      });
+    });
+
     forms = [];
 
     forms.push(createForm());
@@ -216,6 +242,49 @@ describe('window.asyncForm', () => {
       });
 
       itFetchesAndFiresEvents(2);
+    });
+  });
+
+  describe("when submitting the form via JavaScript", () => {
+    it("dispatches a \"submitting\" event", () => {
+      const submittingCallback = jest.fn();
+
+      forms[0].addEventListener('submitting.asyncForm', submittingCallback);
+      asyncForm.submit(forms[0]);
+
+      expect(submittingCallback).toBeCalled();
+    });
+
+    pit("dispatches a \"submitted\" event", () => {
+      return new Promise(resolve => {
+        forms[0].addEventListener('submitted.asyncForm', resolve);
+        asyncForm.submit(forms[0]);
+      });
+    });
+
+    pit("dispatches a \"success\" event", () => {
+      return new Promise(resolve => {
+        forms[0].addEventListener('success.asyncForm', resolve);
+        asyncForm.submit(forms[0]);
+      });
+    });
+
+    pit("dispatches a \"fail\" event", () => {
+      forms[0].action = '/fail';
+
+      return new Promise(resolve => {
+        forms[0].addEventListener('fail.asyncForm', resolve);
+        asyncForm.submit(forms[0]);
+      });
+    });
+
+    pit("dispatches a \"error\" event", () => {
+      forms[0].action = '/notvalid';
+
+      return new Promise(resolve => {
+        forms[0].addEventListener('error.asyncForm', resolve);
+        asyncForm.submit(forms[0]);
+      });
     });
   });
 

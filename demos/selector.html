@@ -7,7 +7,7 @@
   </head>
 
   <body>
-    <form id="post_form" action="" method="POST">
+    <form class="js-async-form" action="" method="POST">
       <input name="email" type="email" value="evan@example.com">
       <input name="options[]" type="checkbox" value="1">
       <input name="options[]" type="checkbox" value="2">
@@ -16,7 +16,7 @@
       <button type="submit">Submit</button>
     </form>
 
-    <form id="get_form" action="" method="GET">
+    <form class="js-async-form" action="" method="GET">
       <input name="email" type="email" value="evan@example.com">
       <input name="password" type="password" value="asdfasdf">
       <button type="submit">Submit</button>
@@ -30,17 +30,26 @@
 
     <script>
       $(function() {
-        asyncForm(document.querySelector('#post_form'));
-        asyncForm(document.querySelector('#get_form'));
-
         asyncForm('.js-async-form');
 
-        document.querySelector('#post_form').addEventListener('submitted.asyncForm', function(event) {
-          console.log('Submitted, got response:', event.detail.response);
+        document.addEventListener('submitting.asyncForm', function(event) {
+          console.log('Submitting with request', event.detail.request);
         });
 
-        document.querySelector('.js-async-form').addEventListener('submitting.asyncForm', function(event) {
-          event.preventDefault()
+        document.addEventListener('submitted.asyncForm', function(event) {
+          console.log('Submitted, got response', event.detail.response);
+        });
+
+        document.addEventListener('success.asyncForm', function(event) {
+          console.log('Successful submission, got response', event.detail.response);
+        });
+
+        document.addEventListener('fail.asyncForm', function(event) {
+          console.log('Unsuccessful submission, got response', event.detail.response);
+        });
+
+        document.addEventListener('error.asyncForm', function(event) {
+          console.error('Request failed.');
         });
       });
     </script>

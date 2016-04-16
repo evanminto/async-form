@@ -1,4 +1,4 @@
-# async-form v0.2.2
+# async-form v0.2.3
 
 Transforms normal HTML forms into asynchronous forms, replacing normal submission with a AJAX requests.
 
@@ -25,10 +25,21 @@ The module exposes a function "asyncForm" that accepts various arguments represe
 
 ## Functions
 ### asyncForm(target)
-`target` is one of the following:
-  * **HTMLFormElement:** a form element
-  * **NodeList:** a list of form elements
-  * **String:** a CSS selector representing one or many form elements
+Intercepts all future submit events on the specified target element(s), replacing
+normal form submission with an AJAX request.
+
+**Arguments:**
+  * `target` is one of the following:
+    * **HTMLFormElement:** a form element
+    * **NodeList:** a list of form elements
+    * **String:** a CSS selector representing one or many form elements
+
+### asyncForm.submit(form)
+Gathers data from a form element and submits it via an AJAX request.
+This method is useful if you would like more fine-grained control over when your form submits its data.
+
+**Arguments:**
+  * `form` is an HTMLFormElement
 
 ## Events
 During submission, the form dispatches a number of custom events representing different steps in the submission process. All events have an "asyncForm" namespace.

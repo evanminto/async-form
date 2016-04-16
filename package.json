@@ -1,6 +1,6 @@
 {
   "name": "@evanminto/async-form",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Transforms normal HTML forms into asynchronous forms, replacing normal submission with a AJAX requests.",
   "main": "src/index.js",
   "scripts": {

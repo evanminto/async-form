@@ -759,9 +759,21 @@ module.exports = function (str) {
 },{}],7:[function(require,module,exports){
 'use strict';
 
-window.asyncForm = require('./initialize');
+window.asyncForm = require('./index');
 
-},{"./initialize":8}],8:[function(require,module,exports){
+},{"./index":8}],8:[function(require,module,exports){
+'use strict';
+
+var asyncForm = require('./initialize');
+
+asyncForm.submit = require('./submitForm');
+
+module.exports = asyncForm;
+
+},{"./initialize":9,"./submitForm":10}],9:[function(require,module,exports){
+/**
+ * @module initialize
+ */
 'use strict';
 
 var matches = require('matches-selector');
@@ -838,7 +850,10 @@ module.exports = function initialize(target) {
   }
 };
 
-},{"./submitForm":9,"matches-selector":3}],9:[function(require,module,exports){
+},{"./submitForm":10,"matches-selector":3}],10:[function(require,module,exports){
+/**
+ * @module submitForm
+ */
 'use strict';
 
 require('whatwg-fetch');

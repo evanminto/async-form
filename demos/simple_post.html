@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+    <script src="../dist/browser.js"></script>
+  </head>
+
+  <body>
+    <form id="post_form" action="" method="POST">
+      <input name="email" type="email" value="evan@example.com">
+      <input name="options[]" type="checkbox" value="1">
+      <input name="options[]" type="checkbox" value="2">
+      <input name="options[]" type="checkbox" value="3">
+      <input name="password" type="password" value="asdfasdf">
+      <button type="submit">Submit</button>
+    </form>
+
+    <script>
+      $(function() {
+        asyncForm(document.querySelector('#post_form'));
+
+        document.addEventListener('submitting.asyncForm', function(event) {
+          console.log('Submitting with request', event.detail.request);
+        });
+
+        document.addEventListener('submitted.asyncForm', function(event) {
+          console.log('Submitted, got response', event.detail.response);
+        });
+
+        document.addEventListener('success.asyncForm', function(event) {
+          console.log('Successful submission, got response', event.detail.response);
+        });
+
+        document.addEventListener('fail.asyncForm', function(event) {
+          console.log('Unsuccessful submission, got response', event.detail.response);
+        });
+
+        document.addEventListener('error.asyncForm', function(event) {
+          console.error('Request failed.');
+        });
+      });
+    </script>
+  </body>
+</html>

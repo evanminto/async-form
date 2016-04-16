@@ -9,6 +9,8 @@ module.exports = function(grunt) {
   grunt.registerTask('build:dev', ['browserify:dev']);
   grunt.registerTask('build:prod', ['browserify:prod']);
 
+  grunt.registerTask('doc', ['jsdoc']);
+
   grunt.registerTask('test', [
     'build:dev',
     'jest',
