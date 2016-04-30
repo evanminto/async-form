@@ -48,6 +48,8 @@ function createForm() {
   form.appendChild(radio3);
   form.appendChild(submitButton);
 
+  form.dataset = {};
+
   document.body.appendChild(form);
 
   return form;

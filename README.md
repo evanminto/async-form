@@ -1,4 +1,4 @@
-# async-form v0.2.3
+# async-form v0.2.4
 
 Transforms normal HTML forms into asynchronous forms, replacing normal submission with a AJAX requests.
 
@@ -72,3 +72,19 @@ Dispatched when the form is about to send the AJAX request. If canceled, the for
 **Cancelable:** *false*
 
 Dispatches when the form has finished sending the AJAX request and received a response with a successful (&gt;= 200, &lt; 300) status code.
+
+## Data Attributes
+Data attributes enable customization of the request properties for AJAX requests sent by the form.
+All data attributes must be attached to the form element and are prefixed with `async-form`.
+
+### data-async-form-accept
+Sets the value of the Accept header on the AJAX request.
+If not provided, the request will set no explicit Accept header.
+
+### data-async-form-credentials
+Sets the value of the [credentials](https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials) property of the AJAX request.
+If not provided, defaults to "omit," as defined in the Fetch API spec.
+
+### data-async-form-mode
+Sets the value of the [mode](https://developer.mozilla.org/en-US/docs/Web/API/Request/mode) property of the AJAX request.
+If not provided, defaults to "no-cors," as defined in the Fetch API spec.

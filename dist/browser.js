@@ -883,6 +883,24 @@ function dispatchFormEvent(form, type, init) {
 }
 
 /**
+ * Generates a Fetch API Headers object based on the provided form element.
+ *
+ * @param  {HTMLFormElement} formElement
+ * @return {Request}
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Request
+ * @private
+ */
+function createHeaders(formElement) {
+  var headers = new Headers();
+
+  if (formElement.dataset.asyncFormAccept) {
+    headers.set('Accept', formElement.dataset.asyncFormAccept);
+  }
+
+  return headers;
+}
+
+/**
  * Generates a Fetch API Request object based on the provided form element.
  *
  * @param  {HTMLFormElement} formElement
@@ -900,9 +918,14 @@ function createRequest(formElement) {
     body = new FormData(formElement);
   }
 
+  var headers = createHeaders(formElement);
+
   return new Request(url, {
     body: body,
-    method: formElement.method
+    headers: headers,
+    method: formElement.method,
+    credentials: formElement.dataset.asyncFormCredentials || 'omit',
+    mode: formElement.dataset.asyncFormMode || 'no-cors'
   });
 }
 

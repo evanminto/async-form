@@ -69,6 +69,8 @@ describe('submitForm', () => {
       input.name = 'foo';
       input.value = 'bar';
       form.appendChild(input);
+
+      form.dataset = {};
     });
 
     afterEach(() => {
@@ -194,6 +196,81 @@ describe('submitForm', () => {
         form.addEventListener('error.asyncForm', resolve);
 
         submitForm(form);
+      });
+    });
+
+    describe("when the form has the data-async-form-accept attribute set", () => {
+      beforeEach(() => {
+        form.dataset.asyncFormAccept = 'application/json';
+      });
+
+      pit("sends a request with the Accept header set based on the data attribute", () => {
+        return new Promise(resolve => {
+          form.addEventListener('submitting.asyncForm', event => {
+            resolve(event);
+          });
+
+          submitForm(form);
+        })
+          .then(event => {
+            return new Promise((resolve, reject) => {
+              if (event.detail.request && event.detail.request.headers.get('Accept') === form.dataset.asyncFormAccept) {
+                resolve();
+              } else {
+                reject();
+              }
+            });
+          });
+      });
+    });
+
+    describe("when the form has the data-async-form-credentials attribute set", () => {
+      beforeEach(() => {
+        form.dataset.asyncFormCredentials = 'same-origin';
+      });
+
+      pit("sends a request with the credentials property set based on the data attribute", () => {
+        return new Promise(resolve => {
+          form.addEventListener('submitting.asyncForm', event => {
+            resolve(event);
+          });
+
+          submitForm(form);
+        })
+          .then(event => {
+            return new Promise((resolve, reject) => {
+              if (event.detail.request && event.detail.request.credentials === form.dataset.asyncFormCredentials) {
+                resolve();
+              } else {
+                reject();
+              }
+            });
+          });
+      });
+    });
+
+    describe("when the form has the data-async-form-mode attribute set", () => {
+      beforeEach(() => {
+        form.dataset.asyncFormMode = 'same-origin';
+      });
+
+      pit("sends a request with the mode property set based on the data attribute", () => {
+        return new Promise(resolve => {
+          form.addEventListener('submitting.asyncForm', event => {
+            resolve(event);
+          });
+
+          submitForm(form);
+        })
+          .then(event => {
+            return new Promise((resolve, reject) => {
+              if (event.detail.request && event.detail.request.mode === form.dataset.asyncFormMode) {
+                resolve();
+              } else {
+                reject();
+              }
+            });
+          });
       });
     });
   });
