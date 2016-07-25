@@ -1,4 +1,4 @@
-# async-form v0.2.4
+# async-form v0.2.5
 
 Transforms normal HTML forms into asynchronous forms, replacing normal submission with a AJAX requests.
 
